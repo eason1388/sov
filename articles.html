@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>修行文苑 — 隨緣堂</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;500;700&family=Noto+Sans+TC:wght@300;400&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --rice: #F5F0E8; --ink: #1C1C1A; --moss: #3D5A47; --moss-light: #5A7A64;
+    --gold: #B8962E; --gold-light: #D4AF55; --stone: #7A7570; --fog: #E8E2D8;
+    --vermillion: #C0392B; --paper: #EDE8DC;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--rice); color:var(--ink); font-family:'Noto Serif TC',serif; font-weight:300; }
+
+  nav {
+    position:fixed; top:0; left:0; right:0; z-index:100;
+    padding:0 5%; display:flex; align-items:center; justify-content:space-between;
+    height:70px; background:rgba(245,240,232,0.95); backdrop-filter:blur(12px);
+    border-bottom:1px solid rgba(184,150,46,0.2);
+  }
+  .nav-logo { display:flex; align-items:center; gap:12px; text-decoration:none; }
+  .logo-text { font-family:'Ma Shan Zheng',cursive; font-size:1.6rem; color:var(--ink); }
+  .nav-links { display:flex; gap:32px; list-style:none; }
+  .nav-links a { text-decoration:none; color:var(--stone); font-size:0.85rem; letter-spacing:0.12em; font-family:'Noto Sans TC',sans-serif; font-weight:300; transition:color 0.3s; }
+  .nav-links a:hover { color:var(--moss); }
+  .nav-cta { background:var(--moss) !important; color:var(--rice) !important; padding:8px 20px; border-radius:2px; }
+
+  /* Page Header */
+  .page-header {
+    padding:140px 10% 80px;
+    background:linear-gradient(135deg, var(--paper) 0%, var(--fog) 100%);
+    position:relative; overflow:hidden;
+  }
+  .page-header::before {
+    content:'文';
+    position:absolute; right:8%; top:50%; transform:translateY(-50%);
+    font-family:'Ma Shan Zheng',cursive; font-size:22vw; color:rgba(28,28,26,0.04);
+    pointer-events:none; line-height:1;
+  }
+  .page-tag { font-family:'Noto Sans TC',sans-serif; font-size:0.7rem; letter-spacing:0.35em; color:var(--gold); margin-bottom:16px; display:block; }
+  .page-title { font-family:'Ma Shan Zheng',cursive; font-size:clamp(2.5rem,5vw,4rem); color:var(--ink); margin-bottom:20px; }
+  .page-desc { font-size:0.95rem; line-height:2; color:var(--stone); max-width:500px; }
+
+  /* Filter tabs */
+  .filter-bar {
+    padding:36px 10%;
+    display:flex; gap:12px; flex-wrap:wrap;
+    border-bottom:1px solid var(--fog);
+  }
+  .filter-btn {
+    font-family:'Noto Sans TC',sans-serif; font-size:0.78rem; letter-spacing:0.15em;
+    padding:8px 20px; border:1px solid var(--fog); background:transparent;
+    color:var(--stone); cursor:pointer; transition:all 0.3s;
+  }
+  .filter-btn.active { background:var(--moss); color:var(--rice); border-color:var(--moss); }
+  .filter-btn:hover:not(.active) { border-color:var(--moss); color:var(--moss); }
+
+  /* Articles layout */
+  .articles-main {
+    padding:60px 10%;
+    display:grid;
+    grid-template-columns:1fr 320px;
+    gap:60px;
+  }
+
+  .article-list { display:flex; flex-direction:column; gap:2px; }
+
+  .article-item {
+    background:var(--paper); padding:44px 48px;
+    display:grid; grid-template-columns:1fr auto;
+    gap:24px; align-items:start;
+    text-decoration:none; color:inherit;
+    transition:background 0.3s;
+    position:relative;
+  }
+  .article-item::before {
+    content:''; position:absolute; left:0; top:0; bottom:0;
+    width:3px; background:linear-gradient(to bottom,var(--gold),var(--moss));
+    transform:scaleY(0); transition:transform 0.4s; transform-origin:top;
+  }
+  .article-item:hover { background:var(--fog); }
+  .article-item:hover::before { transform:scaleY(1); }
+
+  .item-cat {
+    display:inline-block; font-family:'Noto Sans TC',sans-serif;
+    font-size:0.68rem; letter-spacing:0.25em; padding:4px 10px;
+    border:1px solid currentColor; margin-bottom:14px;
+  }
+  .cat-cultivation { color:var(--moss); }
+  .cat-ritual { color:var(--vermillion); }
+  .cat-metaphysics { color:var(--gold); }
+
+  .item-title {
+    font-family:'Noto Serif TC',serif; font-size:1.2rem; font-weight:500;
+    color:var(--ink); line-height:1.6; margin-bottom:12px;
+  }
+  .item-excerpt { font-size:0.88rem; line-height:1.9; color:var(--stone); margin-bottom:16px; }
+  .item-meta { font-family:'Noto Sans TC',sans-serif; font-size:0.72rem; color:var(--stone); letter-spacing:0.1em; opacity:0.7; }
+
+  .item-number {
+    font-family:'Ma Shan Zheng',cursive; font-size:3.5rem; color:rgba(184,150,46,0.15);
+    line-height:1; padding-top:4px; min-width:60px; text-align:right;
+  }
+
+  /* Sidebar */
+  .sidebar { position:sticky; top:90px; align-self:start; }
+
+  .sidebar-card {
+    background:var(--paper); padding:32px 28px; margin-bottom:2px;
+  }
+  .sidebar-title {
+    font-family:'Noto Sans TC',sans-serif; font-size:0.7rem; letter-spacing:0.3em;
+    color:var(--gold); margin-bottom:20px;
+  }
+  .sidebar-quote {
+    font-family:'Ma Shan Zheng',cursive; font-size:1.1rem; color:var(--ink);
+    line-height:1.9; margin-bottom:12px;
+  }
+  .sidebar-src { font-family:'Noto Sans TC',sans-serif; font-size:0.72rem; color:var(--stone); }
+
+  .tag-cloud { display:flex; flex-wrap:wrap; gap:8px; }
+  .tag {
+    font-family:'Noto Sans TC',sans-serif; font-size:0.72rem; letter-spacing:0.1em;
+    padding:6px 12px; border:1px solid var(--fog); color:var(--stone);
+    cursor:pointer; transition:all 0.3s; text-decoration:none;
+  }
+  .tag:hover { border-color:var(--moss); color:var(--moss); }
+
+  .service-list { display:flex; flex-direction:column; gap:10px; }
+  .service-link {
+    display:flex; justify-content:space-between; align-items:center;
+    text-decoration:none; padding:10px 0;
+    border-bottom:1px solid var(--fog);
+    color:var(--ink); font-size:0.85rem;
+    transition:color 0.3s;
+  }
+  .service-link:hover { color:var(--moss); }
+  .service-arrow { color:var(--gold); font-size:0.8rem; }
+
+  /* Full article sections */
+  .full-article {
+    padding:80px 10%;
+    border-top:2px solid var(--fog);
+  }
+  .full-article:nth-child(odd) { background:var(--paper); }
+
+  .article-header { margin-bottom:48px; }
+  .article-heading {
+    font-family:'Ma Shan Zheng',cursive; font-size:clamp(1.8rem,3vw,2.6rem);
+    color:var(--ink); line-height:1.4; margin-bottom:16px; margin-top:16px;
+  }
+  .article-meta-full {
+    font-family:'Noto Sans TC',sans-serif; font-size:0.78rem; letter-spacing:0.15em;
+    color:var(--stone); opacity:0.7;
+  }
+
+  .article-body { max-width:680px; }
+  .article-body p {
+    font-size:1rem; line-height:2.2; color:var(--stone); margin-bottom:24px;
+  }
+  .article-body h3 {
+    font-family:'Ma Shan Zheng',cursive; font-size:1.5rem; color:var(--ink);
+    margin:36px 0 16px; padding-left:16px;
+    border-left:3px solid var(--gold);
+  }
+  .article-body h4 {
+    font-family:'Noto Serif TC',serif; font-size:1rem; font-weight:500;
+    color:var(--moss); margin:24px 0 12px; letter-spacing:0.05em;
+  }
+  .article-body blockquote {
+    border-left:3px solid var(--gold); padding:16px 24px;
+    margin:32px 0; background:var(--fog); font-style:italic;
+  }
+  .article-body blockquote p { margin:0; font-size:0.95rem; color:var(--ink); }
+
+  .highlight-box {
+    background:var(--moss); color:var(--rice); padding:28px 32px;
+    margin:36px 0;
+  }
+  .highlight-box p { color:rgba(245,240,232,0.85); line-height:2; margin:0; }
+  .highlight-box strong { color:var(--rice); }
+
+  footer {
+    background:var(--ink); padding:40px 10%;
+    display:flex; justify-content:space-between; align-items:center;
+    flex-wrap:wrap; gap:16px;
+  }
+  .footer-logo { font-family:'Ma Shan Zheng',cursive; font-size:1.6rem; color:var(--rice); }
+  .footer-text { font-family:'Noto Sans TC',sans-serif; font-size:0.72rem; color:rgba(245,240,232,0.4); }
+  .footer-blessing { font-family:'Ma Shan Zheng',cursive; font-size:1rem; color:var(--gold); }
+
+  .fade-up { opacity:0; transform:translateY(24px); transition:opacity 0.6s,transform 0.6s; }
+  .fade-up.visible { opacity:1; transform:translateY(0); }
+
+  @media(max-width:1024px){
+    .articles-main { grid-template-columns:1fr; }
+    .sidebar { position:static; }
+  }
+  @media(max-width:768px){
+    .nav-links { display:none; }
+    .article-item { grid-template-columns:1fr; }
+    .item-number { display:none; }
+    .full-article { padding:60px 6%; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">
+    <span class="logo-text">隨緣堂</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html#channels">三大頻道</a></li>
+    <li><a href="articles.html">修行文苑</a></li>
+    <li><a href="symbols.html">符咒百科</a></li>
+    <li><a href="index.html#daily-quote">每日法語</a></li>
+    <li><a href="index.html#consultation" class="nav-cta">預約諮詢</a></li>
+  </ul>
+</nav>
+
+<header class="page-header">
+  <span class="page-tag">修行文苑 · 玄門深義</span>
+  <h1 class="page-title">道家玄學<br>深度專欄</h1>
+  <p class="page-desc">融合正統道教傳承與現代能量科學，以理性的玄學觀點，引領有緣人探索天人合一之道。</p>
+</header>
+
+<div class="filter-bar">
+  <button class="filter-btn active" onclick="filterArticles('all', this)">全部文章</button>
+  <button class="filter-btn" onclick="filterArticles('cultivation', this)">清靜經緯</button>
+  <button class="filter-btn" onclick="filterArticles('ritual', this)">法露恩光</button>
+  <button class="filter-btn" onclick="filterArticles('metaphysics', this)">玄門密義</button>
+</div>
+
+<div class="articles-main">
+  <!-- Article List -->
+  <div class="article-list" id="articleList">
+
+    <a href="#qi" class="article-item fade-up" data-cat="cultivation" id="li-qi">
+      <div>
+        <span class="item-cat cat-cultivation">清靜經緯</span>
+        <h2 class="item-title">玄門養氣：為何「氣」是修行者的生命之本？</h2>
+        <p class="item-excerpt">道教認為「人活一口氣」。這口氣不只是氧氣，而是「先天炁」與「後天精氣」的結合。修行不是為了神通，而是為了「聚精、會神、養氣」三者合一，透過每日靜坐感受氣息流動，乃入門第一要訣。</p>
+        <p class="item-meta">清靜經緯 · 修行基礎 · 閱讀約 8 分鐘</p>
+      </div>
+      <div class="item-number">一</div>
+    </a>
+
+    <a href="#ritual" class="article-item fade-up" data-cat="ritual" id="li-ritual">
+      <div>
+        <span class="item-cat cat-ritual">法露恩光</span>
+        <h2 class="item-title">祭改並非迷信：淺談時空能量的「撥亂反正」</h2>
+        <p class="item-excerpt">祭改（祭煞與改運）的本質，是透過特定的科儀——聲音、符咒、方位、法器——將個人紊亂的能量場調回正軌。所謂「煞」，其實是宇宙中不協調的頻率，與個人磁場產生共振後的負面影響。</p>
+        <p class="item-meta">法露恩光 · 祭改入門 · 閱讀約 6 分鐘</p>
+      </div>
+      <div class="item-number">二</div>
+    </a>
+
+    <a href="#soul" class="article-item fade-up" data-cat="ritual" id="li-soul">
+      <div>
+        <span class="item-cat cat-ritual">法露恩光</span>
+        <h2 class="item-title">魂魄的安寧：為什麼小孩與大人都需要收驚？</h2>
+        <p class="item-excerpt">人有三魂七魄，分別對應精神、意識與生理官能。當受到突如其來的驚嚇或磁場干擾，魂魄容易游離或受損。本文同時分享收驚的神經科學觀點與玄學觀點，並提供居家安神小撇步。</p>
+        <p class="item-meta">法露恩光 · 收驚原理 · 閱讀約 7 分鐘</p>
+      </div>
+      <div class="item-number">三</div>
+    </a>
+
+    <a href="#symbol" class="article-item fade-up" data-cat="metaphysics" id="li-symbol">
+      <div>
+        <span class="item-cat cat-metaphysics">玄門密義</span>
+        <h2 class="item-title">從能量共振看符咒：收驚與驅陰的運作原理</h2>
+        <p class="item-excerpt">符咒常被誤解為單純的迷信圖騰。然而以能量動力學的角度審視，符咒實則是宇宙高頻能量的載體，是一套精密的「頻率調頻系統」。本文深度剖析收驚符與驅邪符的科學原理。</p>
+        <p class="item-meta">玄門密義 · 符咒科學 · 閱讀約 10 分鐘</p>
+      </div>
+      <div class="item-number">四</div>
+    </a>
+
+    <a href="#taichi" class="article-item fade-up" data-cat="cultivation" id="li-taichi">
+      <div>
+        <span class="item-cat cat-cultivation">清靜經緯</span>
+        <h2 class="item-title">天人合一的實踐：打坐如何開啟元神與宇宙的「無障礙溝通」？</h2>
+        <p class="item-excerpt">透過打坐修行，我們並非在創造連結，而是「恢復」那個本就存在的宇宙通訊。元神是與生俱來的先天靈光，本質與宇宙的「道」同頻，當大腦的雜訊停止，內在最敏銳的接收器才能開始工作。</p>
+        <p class="item-meta">清靜經緯 · 天人合一 · 閱讀約 9 分鐘</p>
+      </div>
+      <div class="item-number">五</div>
+    </a>
+
+    <a href="#yinyang" class="article-item fade-up" data-cat="metaphysics" id="li-yinyang">
+      <div>
+        <span class="item-cat cat-metaphysics">玄門密義</span>
+        <h2 class="item-title">失衡的代價：論「陰陽調和」對現代生命品質的決定性影響</h2>
+        <p class="item-excerpt">現代社會的快節奏與環境變遷，正讓多數人處於嚴重的「陰陽失調」狀態。本文從生理、居家環境與靈性三個層面，深入探討調和才是改運與養生的真正核心。</p>
+        <p class="item-meta">玄門密義 · 陰陽調和 · 閱讀約 8 分鐘</p>
+      </div>
+      <div class="item-number">六</div>
+    </a>
+
+  </div><!-- end article-list -->
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-card">
+      <p class="sidebar-title">今日法語</p>
+      <p class="sidebar-quote">「修行莫求神通，養氣莫求感應。無心無我，道自然成。」</p>
+      <p class="sidebar-src">— 隨緣堂修行要訣</p>
+    </div>
+
+    <div class="sidebar-card">
+      <p class="sidebar-title">文章標籤</p>
+      <div class="tag-cloud">
+        <a href="#" class="tag">養氣</a>
+        <a href="#" class="tag">打坐</a>
+        <a href="#" class="tag">收驚</a>
+        <a href="#" class="tag">祭改</a>
+        <a href="#" class="tag">符咒</a>
+        <a href="#" class="tag">陰陽</a>
+        <a href="#" class="tag">元神</a>
+        <a href="#" class="tag">天人合一</a>
+        <a href="#" class="tag">五行</a>
+        <a href="#" class="tag">冤親債主</a>
+        <a href="#" class="tag">丹道</a>
+        <a href="#" class="tag">能量調理</a>
+      </div>
+    </div>
+
+    <div class="sidebar-card">
+      <p class="sidebar-title">服務導引</p>
+      <div class="service-list">
+        <a href="index.html#consultation" class="service-link">
+          <span>收驚服務</span><span class="service-arrow">→</span>
+        </a>
+        <a href="index.html#consultation" class="service-link">
+          <span>祭改服務</span><span class="service-arrow">→</span>
+        </a>
+        <a href="symbols.html" class="service-link">
+          <span>符咒百科</span><span class="service-arrow">→</span>
+        </a>
+        <a href="index.html#consultation" class="service-link">
+          <span>線上初診</span><span class="service-arrow">→</span>
+        </a>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<!-- Full Articles -->
+<article class="full-article" id="qi">
+  <div class="article-header">
+    <span class="item-cat cat-cultivation" style="display:inline-block;font-family:'Noto Sans TC',sans-serif;font-size:0.68rem;letter-spacing:0.25em;padding:4px 10px;border:1px solid #3D5A47;color:#3D5A47;margin-bottom:0;">清靜經緯</span>
+    <h2 class="article-heading">玄門養氣：為何「氣」是修行者的生命之本？</h2>
+    <p class="article-meta-full">修行基礎 · 閱讀約 8 分鐘</p>
+  </div>
+  <div class="article-body">
+    <p>道教認為「人活一口氣」。這口氣不只是我們日常呼吸的空氣，而是「先天炁」與「後天精氣」的深層結合。先天炁是人在出生之前，從父母精血與天地宇宙所稟受的原始能量，是生命最根本的動力來源。後天精氣，則是人在出生之後，透過飲食、呼吸、睡眠不斷補充的能量。</p>
+
+    <h3>修行的真正目的</h3>
+    <p>許多初學者誤以為修行是為了追求神通感應，或是希望練就什麼特殊的法術能力。然而，正統道家的修行觀截然不同。修行的核心在於三個字：「聚精、會神、養氣」。</p>
+    <p>所謂「聚精」，是指收攝散亂的精力，不讓其無謂耗損；「會神」，是讓心神由外散轉為內守，停止對外界的過度攀緣；「養氣」，則是在前兩者的基礎上，讓體內的氣機自然流動、積蓄充沛。</p>
+
+    <h3>內觀的重要性</h3>
+    <p>文章應強調「內觀」的重要性。現代人從早到晚接收外在的資訊刺激，眼、耳、鼻、舌、身、意六根不斷向外馳散，精氣神因此大量耗損。道家修行的第一步，便是「逆流而上」——將向外流失的精神收攝回來。</p>
+
+    <blockquote>
+      <p>「神行則氣行，神住則氣住。」這句古訓道出了一個深刻的修行真理：心神的走向，決定了氣的走向。當你的心念停止飄散，氣自然會在體內凝聚。</p>
+    </blockquote>
+
+    <h3>每日靜坐實踐法</h3>
+    <p>教導讀者如何透過每日靜坐十五分鐘，感受氣息在體內的流動。找一個安靜的環境，盤腿或正坐均可，閉目垂簾，舌頂上顎，自然呼吸。不要刻意控制呼吸，只是觀察它——觀察吸氣時小腹的微微隆起，觀察呼氣時全身的自然放鬆。</p>
+    <p>持續十五分鐘，每日如法修持。初期可能雜念紛飛，這是正常的。道家的態度是：不迎不拒。念頭來了，只是輕輕地注意它，然後讓它自然消散，再將注意力緩緩帶回呼吸。</p>
+
+    <div class="highlight-box">
+      <p><strong>隨緣堂叮嚀：</strong>修行是一條長遠的路，急不來，也強求不得。每日十五分鐘，持之以恆三個月，必能感受到身心的細微變化。若在修行過程中有任何疑問，歡迎透過本堂的諮詢服務，獲得個人化的修行指引。</p>
+    </div>
+  </div>
+</article>
+
+<article class="full-article" id="ritual">
+  <div class="article-header">
+    <span class="item-cat cat-ritual" style="display:inline-block;font-family:'Noto Sans TC',sans-serif;font-size:0.68rem;letter-spacing:0.25em;padding:4px 10px;border:1px solid #C0392B;color:#C0392B;margin-bottom:0;">法露恩光</span>
+    <h2 class="article-heading">祭改並非迷信：淺談時空能量的「撥亂反正」</h2>
+    <p class="article-meta-full">祭改入門 · 閱讀約 6 分鐘</p>
+  </div>
+  <div class="article-body">
+    <p>每當談起「祭改」，許多現代人的第一反應往往是疑惑：「這不是迷信嗎？」然而，若我們以更宏觀的宇宙能量觀來理解，祭改（祭煞與改運）的本質，其實是一種極為理性的「能量場調整」。</p>
+
+    <h3>何謂「煞」？</h3>
+    <p>煞，並非民間故事中青面獠牙的神鬼，而是宇宙中存在的一種「不協調頻率」。就像無線電波中的雜訊，或是電腦程式中的惡意代碼，當這種不協調的宇宙頻率與個人的生命磁場產生共振，便會在生活中表現為各種阻礙、病痛或意外。</p>
+    <p>道家術數透過「流年八字」的分析，可以計算出個人在特定時間段內，與哪些宇宙頻率產生了負面共振。這就是所謂的「五鬼、天狗、白虎、喪門」等流年煞星的真正含義——它們是一套描述宇宙能量狀態的語言，而非真實存在的鬼神。</p>
+
+    <h3>科儀的運作機制</h3>
+    <p>祭改透過特定的科儀——包含聲音（法器、誦咒）、符咒（能量載體）、方位（空間幾何）與法器（導體）——共同構成一個「能量重置系統」。這套系統的目的，是在特定的時空條件下，將個人紊亂的能量場強制重新排序，回到正向流動的軌跡。</p>
+
+    <blockquote>
+      <p>「祭改之後，人仍需存好心、行好事，才能長久維持改運的效果。」這是本堂最重要的觀念。符咒與科儀只是助力，真正決定命運的，永遠是當事人的心念與行動。</p>
+    </blockquote>
+
+    <h3>本堂服務流程</h3>
+    <p>本堂的祭改服務以生辰八字（理）為診斷基礎，以法事科儀（事）為處理手段。首先分析來者的命盤流年，確認受到哪些煞星影響；接著制定相應的化解方案；最後透過實體或遠距的方式進行法事，同時搭配個人化的趨吉建議。</p>
+
+    <div class="highlight-box">
+      <p><strong>重要聲明：</strong>祭改服務為心靈慰藉與能量輔助，若有健康問題，請務必先尋求專業醫療協助。本堂秉持「先看醫學，後看玄學」的負責任態度。</p>
+    </div>
+  </div>
+</article>
+
+<article class="full-article" id="symbol">
+  <div class="article-header">
+    <span class="item-cat cat-metaphysics" style="display:inline-block;font-family:'Noto Sans TC',sans-serif;font-size:0.68rem;letter-spacing:0.25em;padding:4px 10px;border:1px solid #B8962E;color:#B8962E;margin-bottom:0;">玄門密義</span>
+    <h2 class="article-heading">從能量共振看符咒：收驚與驅陰的運作原理</h2>
+    <p class="article-meta-full">符咒科學 · 閱讀約 10 分鐘</p>
+  </div>
+  <div class="article-body">
+    <p>在道家玄學的領域中，符咒常被誤解為單純的「迷信圖騰」。然而，若我們撥開神祕學的外衣，以能量動力學的角度審視，符咒實則是宇宙高頻能量的載體，是一套精密的「頻率調頻系統」。</p>
+
+    <h3>收驚符：魂魄的「重啟與歸位」</h3>
+    <h4>一、魂魄的頻率紊亂</h4>
+    <p>道教認為人有三魂七魄，分別對應人體的精神、意識與生理官能。當人受到巨大的外力驚嚇時，原本穩定的生物磁場會產生劇烈震盪，導致魂魄的頻率與肉體脫節，這就是民俗所說的「失魂落魄」。</p>
+
+    <h4>二、符咒的運作：安魂定魄</h4>
+    <p>收驚符上的符文代表著宇宙中最穩定的原始頻率。當符咒經過焚化或佩戴，其釋放出的能量場會與患者紊亂的磁場產生同頻共振，就像一個磁石，將游離在外的散亂能量重新吸引回肉體的中心點。</p>
+
+    <h3>驅陰與處靈：能量的「排斥與轉化」</h3>
+    <p>處理陰魂是玄學中最嚴肅的課題。陰魂本質上是帶有強烈「低頻負面情緒」——如怨、恨、悲、執——的能量殘留。正統驅邪符的核心能量來自於「純陽」，根據宇宙法則，高頻陽剛能量與低頻陰森能量無法在同一空間共存。</p>
+
+    <h3>為何必須由「專業傳承者」施作？</h3>
+    <p>符咒本身是「電路圖」，而法師的修為與養氣則是「電力」。沒有電力的電路圖只是一張廢紙。正統符咒需經過「點敕」儀式，方能開啟宇宙能量的權限。此外，每個人的受驚程度、每個陰魂的成因都不同，專業者需先「觀氣、診斷」，再決定使用何種符文。</p>
+
+    <blockquote>
+      <p>「符咒乃輔助之功，非萬能之藥。身體有疾應先求醫，運勢有阻應先修心。符咒如帆，修行如舵，有帆無舵，難抵彼岸。」</p>
+    </blockquote>
+
+    <div class="highlight-box">
+      <p><strong>想了解更多符咒知識？</strong>歡迎前往本堂的「<a href="symbols.html" style="color:var(--gold-light);">符咒小百科</a>」，深入了解各類符咒的功能分類與能量導引原理。</p>
+    </div>
+  </div>
+</article>
+
+<footer>
+  <span class="footer-logo">隨緣堂</span>
+  <span class="footer-text">© 隨緣堂 道家玄學道場 · 保留一切權利<br>玄學服務為心靈輔助，身體不適請先就醫</span>
+  <span class="footer-blessing">福生無量天尊</span>
+</footer>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((e,i) => {
+      if(e.isIntersecting) setTimeout(() => e.target.classList.add('visible'), i*100);
+    });
+  }, { threshold:0.1 });
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+  function filterArticles(cat, btn) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.article-item').forEach(item => {
+      if(cat === 'all' || item.dataset.cat === cat) {
+        item.style.display = 'grid';
+      } else {
+        item.style.display = 'none';
+      }
+    });
+  }
+</script>
+</body>
+</html>

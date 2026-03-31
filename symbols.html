@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>符咒百科 — 隨緣堂</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;500;700&family=Noto+Sans+TC:wght@300;400&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --rice:#F5F0E8; --ink:#1C1C1A; --moss:#3D5A47; --moss-light:#5A7A64;
+    --gold:#B8962E; --gold-light:#D4AF55; --stone:#7A7570; --fog:#E8E2D8;
+    --vermillion:#C0392B; --paper:#EDE8DC;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--rice); color:var(--ink); font-family:'Noto Serif TC',serif; font-weight:300; }
+
+  nav {
+    position:fixed; top:0; left:0; right:0; z-index:100;
+    padding:0 5%; display:flex; align-items:center; justify-content:space-between;
+    height:70px; background:rgba(245,240,232,0.95); backdrop-filter:blur(12px);
+    border-bottom:1px solid rgba(184,150,46,0.2);
+  }
+  .nav-logo { display:flex; align-items:center; gap:12px; text-decoration:none; }
+  .logo-text { font-family:'Ma Shan Zheng',cursive; font-size:1.6rem; color:var(--ink); }
+  .nav-links { display:flex; gap:32px; list-style:none; }
+  .nav-links a { text-decoration:none; color:var(--stone); font-size:0.85rem; letter-spacing:0.12em; font-family:'Noto Sans TC',sans-serif; font-weight:300; transition:color 0.3s; }
+  .nav-links a:hover { color:var(--moss); }
+  .nav-cta { background:var(--moss) !important; color:var(--rice) !important; padding:8px 20px; border-radius:2px; }
+
+  /* Header */
+  .page-header {
+    padding:140px 10% 80px;
+    background: radial-gradient(ellipse 80% 60% at 50% 100%, rgba(61,90,71,0.08) 0%, transparent 70%),
+                linear-gradient(180deg, var(--ink) 0%, #2A2A28 100%);
+    position:relative; overflow:hidden; color:var(--rice);
+  }
+  .page-header::before {
+    content:'符';
+    position:absolute; right:5%; top:50%; transform:translateY(-50%);
+    font-family:'Ma Shan Zheng',cursive; font-size:25vw; color:rgba(255,255,255,0.03);
+    pointer-events:none; line-height:1;
+  }
+  .page-tag { font-family:'Noto Sans TC',sans-serif; font-size:0.7rem; letter-spacing:0.35em; color:var(--gold); margin-bottom:16px; display:block; }
+  .page-title { font-family:'Ma Shan Zheng',cursive; font-size:clamp(2.5rem,5vw,4rem); color:var(--rice); margin-bottom:20px; }
+  .page-desc { font-size:0.95rem; line-height:2; color:rgba(245,240,232,0.6); max-width:500px; }
+
+  /* Intro wisdom */
+  .wisdom-bar {
+    background:var(--gold); padding:24px 10%;
+    display:flex; align-items:center; gap:24px;
+  }
+  .wisdom-text {
+    font-family:'Ma Shan Zheng',cursive; font-size:1rem; color:var(--ink);
+    line-height:1.8; flex:1;
+  }
+  .wisdom-cite { font-family:'Noto Sans TC',sans-serif; font-size:0.72rem; color:rgba(28,28,26,0.6); white-space:nowrap; }
+
+  /* 3 Elements */
+  .elements-section {
+    padding:80px 10%; background:var(--paper);
+    display:grid; grid-template-columns:repeat(3,1fr); gap:2px;
+  }
+  .element-card {
+    background:var(--rice); padding:48px 36px; text-align:center;
+  }
+  .element-char {
+    font-family:'Ma Shan Zheng',cursive; font-size:4rem; color:var(--gold);
+    margin-bottom:16px; display:block;
+    text-shadow:0 4px 24px rgba(184,150,46,0.3);
+  }
+  .element-name {
+    font-family:'Ma Shan Zheng',cursive; font-size:1.4rem; color:var(--ink); margin-bottom:12px;
+  }
+  .element-sub { font-family:'Noto Sans TC',sans-serif; font-size:0.75rem; letter-spacing:0.2em; color:var(--gold); margin-bottom:16px; }
+  .element-desc { font-size:0.88rem; line-height:1.9; color:var(--stone); }
+
+  /* Category sections */
+  .cat-section { padding:80px 10%; }
+  .cat-section:nth-child(even) { background:var(--paper); }
+
+  .cat-header {
+    display:grid; grid-template-columns:auto 1fr; gap:32px; align-items:center;
+    margin-bottom:56px; padding-bottom:32px; border-bottom:1px solid var(--fog);
+  }
+  .cat-number {
+    font-family:'Ma Shan Zheng',cursive; font-size:5rem; color:var(--gold);
+    opacity:0.3; line-height:1;
+  }
+  .cat-tag { font-family:'Noto Sans TC',sans-serif; font-size:0.7rem; letter-spacing:0.35em; color:var(--gold); margin-bottom:10px; display:block; }
+  .cat-title { font-family:'Ma Shan Zheng',cursive; font-size:2rem; color:var(--ink); margin-bottom:10px; }
+  .cat-desc { font-size:0.9rem; line-height:1.9; color:var(--stone); max-width:500px; }
+
+  /* Symbol grid */
+  .symbol-grid {
+    display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:2px;
+  }
+  .symbol-card {
+    background:var(--rice); padding:36px 28px; position:relative; overflow:hidden;
+    transition:transform 0.3s;
+    cursor:pointer;
+  }
+  .cat-section:nth-child(even) .symbol-card { background:var(--fog); }
+  .symbol-card:hover { transform:translateY(-4px); }
+
+  .symbol-glyph {
+    font-family:'Ma Shan Zheng',cursive; font-size:2.8rem;
+    margin-bottom:16px; display:block; opacity:0.7;
+  }
+  .symbol-name {
+    font-family:'Ma Shan Zheng',cursive; font-size:1.3rem; color:var(--ink); margin-bottom:8px;
+  }
+  .symbol-element {
+    font-family:'Noto Sans TC',sans-serif; font-size:0.68rem; letter-spacing:0.2em;
+    color:var(--gold); margin-bottom:12px; display:block;
+  }
+  .symbol-desc { font-size:0.84rem; line-height:1.8; color:var(--stone); margin-bottom:16px; }
+
+  .symbol-tags { display:flex; flex-wrap:wrap; gap:6px; }
+  .symbol-tag {
+    font-family:'Noto Sans TC',sans-serif; font-size:0.65rem; padding:3px 8px;
+    border:1px solid var(--fog); color:var(--stone); border-radius:0;
+  }
+
+  /* Watermark art per category */
+  .cat-section { position:relative; }
+  .cat-watermark {
+    position:absolute; right:5%; top:50%; transform:translateY(-50%);
+    font-family:'Ma Shan Zheng',cursive; font-size:18vw; color:rgba(28,28,26,0.025);
+    pointer-events:none; line-height:1;
+  }
+
+  /* Warning */
+  .warning-section {
+    padding:60px 10%; background:var(--ink); color:var(--rice);
+    display:grid; grid-template-columns:auto 1fr; gap:48px; align-items:center;
+  }
+  .warning-icon { font-size:4rem; opacity:0.6; }
+  .warning-title { font-family:'Ma Shan Zheng',cursive; font-size:1.8rem; color:var(--gold); margin-bottom:12px; }
+  .warning-text { font-size:0.9rem; line-height:2; color:rgba(245,240,232,0.7); }
+  .warning-text strong { color:var(--rice); }
+
+  /* CTA */
+  .cta-section {
+    padding:80px 10%; text-align:center; background:var(--paper);
+  }
+  .cta-title { font-family:'Ma Shan Zheng',cursive; font-size:2.2rem; color:var(--ink); margin-bottom:16px; }
+  .cta-desc { font-size:0.95rem; line-height:2; color:var(--stone); max-width:500px; margin:0 auto 36px; }
+  .btn-primary {
+    background:var(--moss); color:var(--rice); padding:16px 40px;
+    text-decoration:none; font-family:'Noto Sans TC',sans-serif;
+    font-size:0.88rem; letter-spacing:0.2em; transition:all 0.3s; display:inline-block;
+    border:1px solid var(--moss);
+  }
+  .btn-primary:hover { background:transparent; color:var(--moss); }
+
+  footer {
+    background:var(--ink); padding:40px 10%;
+    display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;
+  }
+  .footer-logo { font-family:'Ma Shan Zheng',cursive; font-size:1.6rem; color:var(--rice); }
+  .footer-text { font-family:'Noto Sans TC',sans-serif; font-size:0.72rem; color:rgba(245,240,232,0.4); }
+  .footer-blessing { font-family:'Ma Shan Zheng',cursive; font-size:1rem; color:var(--gold); }
+
+  .fade-up { opacity:0; transform:translateY(24px); transition:opacity 0.6s,transform 0.6s; }
+  .fade-up.visible { opacity:1; transform:translateY(0); }
+
+  @media(max-width:768px){
+    .nav-links { display:none; }
+    .elements-section { grid-template-columns:1fr; }
+    .cat-header { grid-template-columns:1fr; }
+    .cat-number { display:none; }
+    .warning-section { grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo"><span class="logo-text">隨緣堂</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html#channels">三大頻道</a></li>
+    <li><a href="articles.html">修行文苑</a></li>
+    <li><a href="symbols.html">符咒百科</a></li>
+    <li><a href="index.html#daily-quote">每日法語</a></li>
+    <li><a href="index.html#consultation" class="nav-cta">預約諮詢</a></li>
+  </ul>
+</nav>
+
+<header class="page-header">
+  <span class="page-tag">玄門密法 · 符籙知識庫</span>
+  <h1 class="page-title">符咒<br>小百科</h1>
+  <p class="page-desc">符咒在道教中被視為「上聖高真之信物」，是溝通宇宙能量與神靈的「密碼」或「委任狀」。本館以功能分類與能量導引角度，帶您認識符籙的奧秘。</p>
+</header>
+
+<div class="wisdom-bar">
+  <p class="wisdom-text">「符咒之功，歸納起來不外乎：召神、遣將、避邪、治病、養生、送厄。」</p>
+  <span class="wisdom-cite">— 道教符籙大系</span>
+</div>
+
+<!-- 3 Elements -->
+<section class="elements-section">
+  <div class="element-card fade-up">
+    <span class="element-char">法</span>
+    <h3 class="element-name">法師</h3>
+    <p class="element-sub">畫符者的修為</p>
+    <p class="element-desc">法師的修為與敕令的力道，決定了符咒能否與宇宙高頻能量接軌。無修為者畫符，如同無執照者駕車，不僅無效，甚至適得其反。</p>
+  </div>
+  <div class="element-card fade-up">
+    <span class="element-char">墨</span>
+    <h3 class="element-name">媒介</h3>
+    <p class="element-sub">硃砂、墨汁等材質</p>
+    <p class="element-desc">硃砂含硫化汞，在道教傳統中被認為具有極強的陽性能量與避邪特性。材質本身是符咒能量的「導體」，選材不當，功效大減。</p>
+  </div>
+  <div class="element-card fade-up">
+    <span class="element-char">神</span>
+    <h3 class="element-name">意念</h3>
+    <p class="element-sub">觀想與氣感</p>
+    <p class="element-desc">畫符時的觀想與氣感，決定了這張紙是「真符」還是「廢紙」。意念是符咒的靈魂，無心畫符，就像無靈魂的軀殼，徒具形式。</p>
+  </div>
+</section>
+
+<!-- Category 1 -->
+<section class="cat-section" id="cat1">
+  <div class="cat-watermark">護</div>
+  <div class="cat-header fade-up">
+    <span class="cat-number">一</span>
+    <div>
+      <span class="cat-tag">第一大類</span>
+      <h2 class="cat-title">趨吉辟邪類 — 護身磁場的強化</h2>
+      <p class="cat-desc">這類符咒最為常見，主要作用在於排除負面能量，建立保護屏障。以「純陽之氣」封閉自身或空間周圍的負能量干擾，增強主體元神。</p>
+    </div>
+  </div>
+  <div class="symbol-grid">
+    <div class="symbol-card fade-up">
+      <span class="symbol-glyph">🔐</span>
+      <h3 class="symbol-name">護身符</h3>
+      <span class="symbol-element">五行屬性：陽火 · 對應心神</span>
+      <p class="symbol-desc">針對個人，封閉自身周圍的負能量干擾，增強主體元神的防護力。適合常走陰暗場所、身體虛弱或氣場偏弱者配戴。</p>
+      <div class="symbol-tags">
+        <span class="symbol-tag">個人防護</span>
+        <span class="symbol-tag">元神強化</span>
+        <span class="symbol-tag">日常配戴</span>
+      </div>
+    </div>
+    <div class="symbol-card fade-up">
+      <span class="symbol-glyph">🏡</span>
+      <h3 class="symbol-name">鎮宅符</h3>
+      <span class="symbol-element">五行屬性：土 · 對應宅運</span>
+      <p class="symbol-desc">針對空間，調和家宅陰陽，防止路煞、土煞或邪祟入屋。通常貼於門楣、廳堂或特定方位，建立居家結界。</p>
+      <div class="symbol-tags">
+        <span class="symbol-tag">宅居防護</span>
+        <span class="symbol-tag">空間淨化</span>
+        <span class="symbol-tag">家宅安康</span>
+      </div>
+    </div>
+    <div class="symbol-card fade-up">
+      <span class="symbol-glyph">🌿</span>
+      <h3 class="symbol-name">破土符 / 安土符</h3>
+      <span class="symbol-element">五行屬性：土木 · 對應地氣</span>
+      <p class="symbol-desc">建築動工時使用，平息地神不安，轉化因動土而引發的沖煞。是施工前不可忽略的重要儀式符咒。</p>
+      <div class="symbol-tags">
+        <span class="symbol-tag">動土儀式</span>
+        <span class="symbol-tag">地神安撫</span>
+        <span class="symbol-tag">建築防煞</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Category 2 -->
+<section class="cat-section" id="cat2">
+  <div class="cat-watermark">淨</div>
+  <div class="cat-header fade-up">
+    <span class="cat-number">二</span>
+    <div>
+      <span class="cat-tag">第二大類</span>
+      <h2 class="cat-title">解厄除穢類 — 淨化與轉運</h2>
+      <p class="cat-desc">當人感到運勢受阻、身心汙濁時，透過此類符咒進行能量層面的「大掃除」，將積累的負面頻率清除、轉化。</p>
+    </div>
+  </div>
+  <div class="symbol-grid">
+    <div class="symbol-card fade-up">
+      <span class="symbol-glyph">💧</span>
+      <h3 class="symbol-name">淨符</h3>
+      <span class="symbol-element">五行屬性：水 · 對應腎精</span>
+      <p class="symbol-desc">用於處理喪事、出入陰氣較重之地後，焚化於水中洗浴，化除外在穢氣。如同能量層面的「消毒」，還原清淨磁場。</p>
+      <div class="symbol-tags">
+        <span class="symbol-tag">除穢清淨</span>
+        <span class="symbol-tag">喪後潔淨</span>
+        <span class="symbol-tag">陰氣化解</span>
+      </div>
+    </div>
+    <div class="symbol-card fade-up">
+      <span class="symbol-glyph">🌀</span>
+      <h3 class="symbol-name">送窮符 / 解冤結符</h3>
+      <span class="symbol-element">五行屬性：木 · 對應肝氣</span>
+      <p class="symbol-desc">處理因果糾纏、口舌是非，將長期纏繞的負面能量引導轉化。適用於長期人際關係受阻、是非不斷的狀況。</p>
+      <div class="symbol-tags">
+        <span class="symbol-tag">因果化解</span>
+        <span class="symbol-tag">人際和諧</span>
+        <span class="symbol-tag">轉運開局</span>
+      </div>
+    </div>
+    <div class="symbol-card fade-up">
+      <span class="symbol-glyph">⚡</span>
+      <h3 class="symbol-name">破邪符</h3>
+      <span class="symbol-element">五行屬性：陽火金 · 對應膽魄</span>
+      <p class="symbol-desc">針對受到陰邪干擾、卡到陰等狀況，具備較強的攻擊力與驅趕作用。為三大類中陽性能量最強的符咒之一。</p>
+      <div class="symbol-tags">
+        <span class="symbol-tag">驅邪強效</span>
+        <span class="symbol-tag">卡陰處理</span>
+        <span class="symbol-tag">急用</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Category 3 -->
+<section class="cat-section" id="cat3">
+  <div class="cat-watermark">安</div>
+  <div class="cat-header fade-up">
+    <span class="cat-number">三</span>
+    <div>
+      <span class="cat-tag">第三大類</span>
+      <h2 class="cat-title">安神治病類 — 生理與心理的輔助</h2>
+      <p class="cat-desc">此類符咒針對因能量失衡引發的身心症狀，提供輔助性的能量調理。特別強調：此為輔助，不可替代專業醫療。</p>
+    </div>
+  </div>
+  <div class="symbol-grid">
+    <div class="symbol-card fade-up">
+      <span class="symbol-glyph">🌙</span>
+      <h3 class="symbol-name">收驚符</h3>
+      <span class="symbol-element">五行屬性：水木 · 對應三魂七魄</span>
+      <p class="symbol-desc">專門針對受驚嚇導致魂魄不穩者，具有安撫植物神經、回攝魂魄之功。適用症狀：睡眠不寧、目光呆滯、莫名心悸、食慾不振。</p>
+      <div class="symbol-tags">
+        <span class="symbol-tag">魂魄安撫</span>
+        <span class="symbol-tag">睡眠改善</span>
+        <span class="symbol-tag">適用兒童</span>
+      </div>
+    </div>
+    <div class="symbol-card fade-up">
+      <span class="symbol-glyph">🌸</span>
+      <h3 class="symbol-name">安胎符</h3>
+      <span class="symbol-element">五行屬性：土 · 對應胎元</span>
+      <p class="symbol-desc">保護孕婦與胎兒磁場穩定，防止流產或外邪驚擾。是傳統道教對新生命最深切的祝福與護持。</p>
+      <div class="symbol-tags">
+        <span class="symbol-tag">孕期保護</span>
+        <span class="symbol-tag">胎元穩固</span>
+        <span class="symbol-tag">母嬰平安</span>
+      </div>
+    </div>
+    <div class="symbol-card fade-up">
+      <span class="symbol-glyph">🔴</span>
+      <h3 class="symbol-name">止血 / 止痛符</h3>
+      <span class="symbol-element">五行屬性：金火 · 對應血氣</span>
+      <p class="symbol-desc">屬道教傳統「禁呪」範疇，多用於緊急意外或傳統民俗醫療輔助。⚠ 此符咒僅為輔助性質，緊急情況請立即就醫。</p>
+      <div class="symbol-tags">
+        <span class="symbol-tag">傳統禁呪</span>
+        <span class="symbol-tag">民俗輔助</span>
+        <span class="symbol-tag">非替代醫療</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Category 4 -->
+<section class="cat-section" id="cat4">
+  <div class="cat-watermark">福</div>
+  <div class="cat-header fade-up">
+    <span class="cat-number">四</span>
+    <div>
+      <span class="cat-tag">第四大類</span>
+      <h2 class="cat-title">祈福招財類 — 能量的吸納與增幅</h2>
+      <p class="cat-desc">以特定符文引導宇宙中流動的吉祥能量，調整個人磁場，使其與財運、學業、人緣等正向能量產生共振。</p>
+    </div>
+  </div>
+  <div class="symbol-grid">
+    <div class="symbol-card fade-up">
+      <span class="symbol-glyph">💰</span>
+      <h3 class="symbol-name">五路財神符</h3>
+      <span class="symbol-element">五行屬性：土金 · 對應財帛宮</span>
+      <p class="symbol-desc">引導東西南北中五方財氣灌注，增進事業運勢。適合開業、投資前，或長期財運停滯者使用。</p>
+      <div class="symbol-tags">
+        <span class="symbol-tag">招財進寶</span>
+        <span class="symbol-tag">事業開運</span>
+        <span class="symbol-tag">五路財氣</span>
+      </div>
+    </div>
+    <div class="symbol-card fade-up">
+      <span class="symbol-glyph">📖</span>
+      <h3 class="symbol-name">文昌符</h3>
+      <span class="symbol-element">五行屬性：木水 · 對應智慧</span>
+      <p class="symbol-desc">開發智慧，讓學子或從業人員神識清明，思緒敏捷。考試前、職涯轉換期，或需要大量腦力工作時尤為適合。</p>
+      <div class="symbol-tags">
+        <span class="symbol-tag">學業助力</span>
+        <span class="symbol-tag">智慧開發</span>
+        <span class="symbol-tag">思緒清明</span>
+      </div>
+    </div>
+    <div class="symbol-card fade-up">
+      <span class="symbol-glyph">🤝</span>
+      <h3 class="symbol-name">和合符</h3>
+      <span class="symbol-element">五行屬性：火土 · 對應人緣</span>
+      <p class="symbol-desc">調和人際關係、夫妻感情，化解戾氣。⚠ 和合符應在正道範圍內使用，任何違背對方自由意志的方式均非本堂所提供。</p>
+      <div class="symbol-tags">
+        <span class="symbol-tag">人際和諧</span>
+        <span class="symbol-tag">感情調和</span>
+        <span class="symbol-tag">正道使用</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Warning -->
+<section class="warning-section">
+  <div class="warning-icon">⚠</div>
+  <div>
+    <h3 class="warning-title">重要說明：符咒三不原則</h3>
+    <p class="warning-text">
+      <strong>不自行摹寫：</strong>本館所有符圖均經藝術模糊化處理。符咒需經法師修為加持與點敕儀式，外行人自行描摹不僅無效，可能引發反效果。<br><br>
+      <strong>不替代醫療：</strong>所有符咒服務為心靈慰藉與能量輔助。身體有疾，請務必先就醫；心理有困，請先尋求心理師協助。本堂嚴格遵守「先看醫學，後看玄學」原則。<br><br>
+      <strong>不保證效果：</strong>符咒如帆，修行如舵。符咒是助力，真正決定命運的是您的心念與行動。若抱著「萬能靈藥」的心態求符，恐難獲其益。
+    </p>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <h2 class="cta-title">需要符咒服務？</h2>
+  <p class="cta-desc">每個人的狀況不同，符咒的選用需要由專業者進行「觀氣、診斷」後決定。歡迎透過本堂的線上初診表單，讓我們為您提供個人化的建議。</p>
+  <a href="index.html#consultation" class="btn-primary">預約線上初診 ✦</a>
+</section>
+
+<footer>
+  <span class="footer-logo">隨緣堂</span>
+  <span class="footer-text">© 隨緣堂 道家玄學道場 · 保留一切權利<br>玄學服務為心靈輔助，身體不適請先就醫</span>
+  <span class="footer-blessing">福生無量天尊</span>
+</footer>
+
+<script>
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach((e,i) => {
+      if(e.isIntersecting) setTimeout(() => e.target.classList.add('visible'), i*80);
+    });
+  }, { threshold:0.08 });
+  document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>
